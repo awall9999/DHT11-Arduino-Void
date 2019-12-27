@@ -44,8 +44,8 @@ bool BlockDHT=false;
 // read the Bits and put them into a Result array (It will count 42 bits. The first two one are useless due my code)
 
 do {
-  if (digitalRead(DHT11_Pin) == 0 && BlockDHT == false) {BlockDHT = true;DataArray++;DataTime=micros();} //If DHT pin is low, go to next Dataset
-  if (digitalRead(DHT11_Pin) == 1) {BlockDHT = false;Result[DataArray]=(micros()-DataTime);} // As long as DHT pin is Hight add time in Microseconds to Result
+  if (digitalRead(DHT11_Pin) == 0 && BlockDHT == false) {BlockDHT = true;Result[DataArray]=(micros()-DataTime);DataArray++;DataTime=micros();} //If DHT pin is low, go to next Dataset
+  if (digitalRead(DHT11_Pin) == 1) {BlockDHT = false;} // As long as DHT pin is Hight add time in Microseconds to Result
   
 
 }while((micros()-DataTime) < 150); // if DTH Sensor high for more than 150 usec, leave loop
@@ -55,8 +55,9 @@ do {
 
 for (int  i=2; i< DataArray; i++) {
   if (Result[i] <= 90) Result[i]=0; else Result[i]=1;
+  //Serial.print(Result[i]);Serial.print(" ");
                                   }
-
+ //Serial.println();
 
 for (int  j=0; j< 5; j++){     // redo it for the 5 Bytes (40 Databits /8 = 5)
 for (int  i=0; i< 8; i++) {bitWrite(DHTData[j], 7-i, Result[i+2+(j*8)]);}  // Create 5 Databytes from the 40 Databits (Ignoring the 2 first Databits)
@@ -74,7 +75,7 @@ void setup() {
 
 void loop() {
  DHT11();
-  if (DHTError == false){Serial.print("Humidity = ");Serial.print(Humidity);Serial.print("% ");Serial.print(" Temp = ");Serial.print(Temp);Serial.print(",");Serial.print(TempComma);Serial.println("°C ");}
-  DelayTimer(2500000); //wait 2,5 sec
+  if (DHTError == false){Serial.print("Humidity = ");Serial.print(Humidity);Serial.print("% ");Serial.print(" Temp = ");Serial.print(Temp);Serial.print(",");Serial.print(TempComma);Serial.println("°C ");} else Serial.println("Error");
+  DelayTimer(500000); //wait 2,5 sec
 
 }
